@@ -161,6 +161,19 @@ export function AuthPage() {
           recommended.
         </p>
         <p>
+          <span className="text-white/50">Private org repos</span> —
+          fine-grained tokens need org admin approval. Easier: use a{" "}
+          <a
+            href="https://github.com/settings/tokens/new?scopes=repo"
+            target="_blank"
+            rel="noreferrer"
+            className="text-violet-400 underline decoration-violet-400/40 underline-offset-2"
+          >
+            classic token
+          </a>{" "}
+          with <span className="text-white/50">repo</span> scope.
+        </p>
+        <p>
           Token is stored in this browser&apos;s local storage only. See the
           README for the security tradeoff.
         </p>

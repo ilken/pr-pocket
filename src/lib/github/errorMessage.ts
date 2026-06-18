@@ -7,7 +7,7 @@ export function getErrorMessage(error: unknown): string {
       return "GitHub API rate limit exceeded. Wait a minute and try again.";
     }
     if (error.status === 404) {
-      return "Not found. Check the URL or your token permissions.";
+      return "PR not found (404). If this is a private org repo, your token may not have access — org admins must approve fine-grained PATs, or use a classic PAT with repo scope instead.";
     }
     return error.message;
   }
