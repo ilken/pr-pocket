@@ -1,3 +1,4 @@
+import type React from "react";
 import type { ChangeGroup } from "@/features/diff-engine/types";
 import type { Highlighter } from "shiki";
 
@@ -61,11 +62,11 @@ function DiffLine({ type, content, highlightedHtml }: LineProps) {
       </span>
       {highlightedHtml ? (
         <span
-          className="min-w-0 flex-1 overflow-x-auto whitespace-pre font-mono text-xs leading-6"
+          className="whitespace-pre font-mono text-xs leading-6"
           dangerouslySetInnerHTML={{ __html: highlightedHtml }}
         />
       ) : (
-        <span className="min-w-0 flex-1 overflow-x-auto whitespace-pre font-mono text-xs leading-6 text-white/75">
+        <span className="whitespace-pre font-mono text-xs leading-6 text-white/75">
           {content}
         </span>
       )}
@@ -105,11 +106,14 @@ export function DiffCard({ group, filename, highlighter }: DiffCardProps) {
 
   return (
     <div
-      className="overflow-hidden rounded-2xl"
+      className="rounded-2xl"
       style={{
         background: "var(--surface-1)",
         border: "1px solid var(--border-subtle)",
-        // Violet top-line for semantic function groups, gives visual hierarchy
+        // clip-path rounds the corners without establishing an overflow scroll
+        // boundary — unlike overflow:hidden which blocks child horizontal scroll
+        // on iOS Safari.
+        clipPath: "inset(0 round 16px)",
         boxShadow: isFunctionGroup
           ? "inset 0 1px 0 0 var(--accent-border)"
           : "none",
@@ -154,16 +158,21 @@ export function DiffCard({ group, filename, highlighter }: DiffCardProps) {
         </div>
       </div>
 
-      {/* Diff lines */}
-      <div className="overflow-x-auto py-1">
-        {group.lines.map((line, i) => (
-          <DiffLine
-            key={i}
-            type={line.type}
-            content={line.content}
-            highlightedHtml={highlightedLines?.[i] ?? null}
-          />
-        ))}
+      {/* Diff lines — single shared scroll so all lines pan together */}
+      <div
+        className="overflow-x-auto py-1"
+        style={{ WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+      >
+        <div style={{ minWidth: "max-content" }}>
+          {group.lines.map((line, i) => (
+            <DiffLine
+              key={i}
+              type={line.type}
+              content={line.content}
+              highlightedHtml={highlightedLines?.[i] ?? null}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

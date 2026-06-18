@@ -29,11 +29,17 @@ export function extractScopes(rootNode: Node): Scope[] {
 function visit(node: Node, scopes: Scope[]) {
   if (FUNCTION_NODE_TYPES.has(node.type)) {
     const name = resolveName(node);
+    // NestJS / Angular decorators live in a `decorated_definition` wrapper that
+    // sits above the method_definition in the AST. The method's own startPosition
+    // is AFTER the decorator lines, so we use the parent's range when the parent
+    // is a decorated_definition — that way decorator lines belong to the scope.
+    const scopeNode =
+      node.parent?.type === "decorated_definition" ? node.parent : node;
     scopes.push({
       name,
       // tree-sitter rows are 0-indexed; we use 1-indexed lines.
-      startLine: node.startPosition.row + 1,
-      endLine: node.endPosition.row + 1,
+      startLine: scopeNode.startPosition.row + 1,
+      endLine: scopeNode.endPosition.row + 1,
     });
   }
   for (let i = 0; i < node.childCount; i++) {
