@@ -43,8 +43,8 @@ const prRoute = createRoute({
 });
 
 const reviewRoute = createRoute({
-  getParentRoute: () => prRoute,
-  path: "/review",
+  getParentRoute: () => rootRoute,
+  path: "/pr/$owner/$repo/$number/review",
   beforeLoad: requireAuth,
   component: ReviewPage,
 });
@@ -52,7 +52,8 @@ const reviewRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   authRoute,
   homeRoute,
-  prRoute.addChildren([reviewRoute]),
+  prRoute,
+  reviewRoute,
 ]);
 
 // Hash history: GitHub Pages has no server-side SPA fallback, so deep links
